@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const connectDB = async () => {
   try {
     // Replace the connection string with your MongoDB Atlas connection string or local MongoDB URL
-    await mongoose.connect('mongodb://127.0.0.1:27017/V&V_E-Commerce', {
+    await mongoose.connect('mongodb://127.0.0.1:27017/vnv', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
