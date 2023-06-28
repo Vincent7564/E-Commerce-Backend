@@ -9,6 +9,7 @@ require('dotenv').config();
 const app = express();
 const User = require("./Models/User");
 const Product = require("./Models/Product");
+const { mongo } = require("mongoose");
 // Connect to the database
 connectDB();
 
@@ -18,6 +19,42 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(express.static(path.join(__dirname, "../E-Commerce-Frontend/build")));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.get("/api/product-card-data",async(req,res,next)=>{
+  try {
+    console.log("hi")
+    const productCardData = await Product.find();
+    const formattedData = productCardData.map((product) => {
+      return {
+        ...product._doc,
+        price: product.price.toString() // Convert price to string
+      };
+    });
+    res.json(formattedData);
+    
+  }catch(error){
+    console.error(error)
+    res.status(500).json({message : 'Server Error'})
+  }
+});
+
+app.get("/api/product-card-data-disc",async(req,res,next)=>{
+  try {
+    console.log("hi")
+    const productCardData = await Product.find();
+    const formattedData = productCardData.map((product) => {
+      return {
+        ...product._doc,
+        price: product.price.toString() // Convert price to string
+      };
+    });
+    res.json(formattedData);
+    
+  }catch(error){
+    console.error(error)
+    res.status(500).json({message : 'Server Error'})
+  }
+});
 
 app.get("*", (req, res) => {
   res.sendFile(
