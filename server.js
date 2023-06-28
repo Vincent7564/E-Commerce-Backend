@@ -38,6 +38,24 @@ app.get("/api/product-card-data",async(req,res,next)=>{
   }
 });
 
+app.get("/api/product-card-data-disc",async(req,res,next)=>{
+  try {
+    console.log("hi")
+    const productCardData = await Product.find();
+    const formattedData = productCardData.map((product) => {
+      return {
+        ...product._doc,
+        price: product.price.toString() // Convert price to string
+      };
+    });
+    res.json(formattedData);
+    
+  }catch(error){
+    console.error(error)
+    res.status(500).json({message : 'Server Error'})
+  }
+});
+
 app.get("*", (req, res) => {
   res.sendFile(
     path.join(__dirname, "../E-Commerce-Frontend/build", "index.html")
