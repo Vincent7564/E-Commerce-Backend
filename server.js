@@ -139,6 +139,7 @@ app.post("/add-product", upload.single('ProductImage'), async (req, res) => {
       price: body.Price,
       description: body.Description,
       qty: body.Qty,
+      disc: body.Discount,
       productImage: req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename
     });
 
