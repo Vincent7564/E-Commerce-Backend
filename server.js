@@ -56,14 +56,7 @@ app.get("/api/product-card-data-disc",async(req,res,next)=>{
   }
 });
 
-app.get("*", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "../E-Commerce-Frontend/build", "index.html")
-  );
-});
-
 // Image store
-
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, './uploads');
@@ -91,10 +84,6 @@ const filefilter = (req, file, cb) => {
 const upload = multer({ storage: storage, filefilter: filefilter });
 
 // Register route
-app.get("/register", (req, res) => {
-  console.log("register");
-});
-
 app.post("/register", async (req, res) => {
   try {
     console.log("Received data:", req.body);
@@ -151,6 +140,25 @@ app.post("/add-product", upload.single('ProductImage'), async (req, res) => {
     console.error("Error:", error);
     res.status(500).json({ message: "Add Product failed" });
   }
+});
+
+// Product Detail
+app.get("/api/product-detail-data",async(req,res,next)=>{
+  try {
+    console.log("heh")
+    const productId = req.query.id
+    const productData = await Product.findOne({_id : productId});
+    res.json(productData);
+  }catch(error){
+    console.error(error)
+    res.status(500).json({message : 'Server Error'})
+  }
+});
+
+app.get("*", (req, res) => {
+  res.sendFile(
+    path.join(__dirname, "../E-Commerce-Frontend/build", "index.html")
+  );
 });
 
 // Start the server
