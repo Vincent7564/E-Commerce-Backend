@@ -9,6 +9,7 @@ require('dotenv').config();
 const app = express();
 const User = require("./Models/User");
 const Product = require("./Models/Product");
+const Carousel = require("./Models/Carousel");
 const { mongo } = require("mongoose");
 // Connect to the database
 connectDB();
@@ -38,10 +39,22 @@ app.get("/api/product-card-data",async(req,res,next)=>{
   }
 });
 
+app.get("/api/carousel-data",async(req,res,next)=>{
+  try{
+    const carouselData = await Carousel.find();
+    console.log(carouselData);
+    res.json(carouselData);
+  }catch(error){
+    console.log(error);
+  }
+});
+
+
+
 app.get("/api/product-card-data-disc",async(req,res,next)=>{
   try {
     console.log("hi")
-    const productCardData = await Product.find();
+    const productCardData = await Product.find({});
     const formattedData = productCardData.map((product) => {
       return {
         ...product._doc,
