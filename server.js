@@ -54,7 +54,7 @@ app.get("/api/carousel-data",async(req,res,next)=>{
 app.get("/api/product-card-data-disc",async(req,res,next)=>{
   try {
     console.log("hi")
-    const productCardData = await Product.find({});
+    const productCardData = await Product.find({disc:{$gt:1}});
     const formattedData = productCardData.map((product) => {
       return {
         ...product._doc,
@@ -120,6 +120,7 @@ app.post("/register", async (req, res) => {
     res.json({ message: "Registration successful" });
   } catch (error) {
     console.error("Error:", error);
+    res.status(500).json({ message: "Registration failed" });
     res.status(500).json({ message: "Registration failed" });
   }
 });
