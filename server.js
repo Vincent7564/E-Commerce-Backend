@@ -54,7 +54,7 @@ app.get("/api/carousel-data",async(req,res,next)=>{
 app.get("/api/product-card-data-disc",async(req,res,next)=>{
   try {
     console.log("hi")
-    const productCardData = await Product.find({disc:{$gt:1}});
+    const productCardData = await Product.find({discount:{$gt:1}});
     const formattedData = productCardData.map((product) => {
       return {
         ...product._doc,
@@ -142,7 +142,7 @@ app.post("/add-product", upload.single('ProductImage'), async (req, res) => {
       price: body.Price,
       description: body.Description,
       qty: body.Qty,
-      disc: body.Discount,
+      discount: body.Discount,
       productImage: req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename
     });
 
