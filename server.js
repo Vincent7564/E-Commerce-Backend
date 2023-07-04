@@ -49,7 +49,17 @@ app.get("/api/carousel-data",async(req,res,next)=>{
   }
 });
 
-
+app.get("/api/search-data",async(req,res,next)=>{
+  try{
+    const searchData = await Product.find({ productName: { $regex: `${req.query.search}`, $options: "i" } });
+    console.log(searchData);
+    const count = searchData.length;
+    res.json({count, data: searchData});
+  }catch(error){
+    console.error(error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
 
 app.get("/api/product-card-data-disc",async(req,res,next)=>{
   try {
