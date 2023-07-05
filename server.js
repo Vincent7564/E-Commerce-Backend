@@ -78,7 +78,7 @@ app.get("/api/search-data",async(req,res,next)=>{
 app.get("/api/product-card-data-disc",async(req,res,next)=>{
   try {
     console.log("hi")
-    const productCardData = await Product.find({discount:{$gt:1}});
+    const productCardData = await Product.find({discount:{$gt:0}});
     const formattedData = productCardData.map((product) => {
       return {
         ...product._doc,
@@ -177,6 +177,36 @@ app.post("/add-product", upload.single('ProductImage'), async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Add Product failed" });
+  }
+});
+
+// Edit Product
+app.patch("/edit-product", upload.single('ProductImage'), async (req, res) => {
+  try {
+    console.log("Received data:", req.body);
+    console.log("Received filename:", req.file.filename);
+    
+    const body = req.body;
+    const imgPath = String(req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename)
+
+    console.log("save to::", imgPath);
+
+    // Save the user to the database
+    await Product.updateOne({"_id": body.id}, {
+      $set: {
+        "productName": body.ProductName,
+        "price": body.Price,
+        "description": body.Description,
+        "qty": body.Qty,
+        "discount": body.Discount,
+        "productImage": req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename
+      }
+    },{ upsert: true });
+
+    res.json({ message: "Edit Product successful" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Edit Product failed" });
   }
 });
 
