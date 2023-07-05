@@ -39,6 +39,20 @@ app.get("/api/product-card-data",async(req,res,next)=>{
   }
 });
 
+app.delete("/api/delete-product/:id", async (req, res) => {
+  const productID = req.params.id; 
+
+  try {
+    const deletedProduct = await Product.findByIdAndRemove(productID);
+    if (!deletedProduct) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+    res.json({ message: "Product deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
 app.get("/api/carousel-data",async(req,res,next)=>{
   try{
     const carouselData = await Carousel.find();
