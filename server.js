@@ -180,6 +180,8 @@ app.post("/add-product", upload.single('ProductImage'), async (req, res) => {
   }
 });
 
+//  Update Product
+
 // Product Detail
 app.get("/api/product-detail-data",async(req,res,next)=>{
   try {
