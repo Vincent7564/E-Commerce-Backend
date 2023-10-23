@@ -1,16 +1,19 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
-const connectDB = require("./db");
+const connectDB = require("./Config/db");
 const bodyParser = require("body-parser");
 const multer = require("multer");
 require('dotenv').config();
-
+const bcrypt = require('bcrypt');
+const auth = require('./Middleware/auth');
 const app = express();
 const User = require("./Models/User");
 const Product = require("./Models/Product");
 const Carousel = require("./Models/Carousel");
+const Token = require("./Models/Token");
 const { mongo } = require("mongoose");
+const jwt = require("jsonwebtoken")
 // Connect to the database
 connectDB();
 
@@ -127,13 +130,15 @@ app.post("/register", async (req, res) => {
     const { Username, FirstName, LastName, Email, Password, Address, Phone } =
       req.body;
 
+    encryptedPassword = await bcrypt.hash(Password, 10);
+    
     // Create a new user instance
     const user = new User({
       username: Username,
       firstName: FirstName,
       lastName: LastName,
       email: Email,
-      password: Password,
+      password: encryptedPassword,
       address: Address,
       phone: Phone,
     });
@@ -225,6 +230,35 @@ app.get("/api/product-detail-data",async(req,res,next)=>{
     res.status(500).json({message : 'Server Error'})
   }
 });
+
+app.post("/api/login",async(req,res)=>{
+  try{
+    const {email,password}=req.body;
+    if(!(email && password)){
+      res.status(400).send("All field must be filled");
+    }
+    console.log(email,password)
+    const user = await User.findOne({email});
+    console.log(user);
+    if(user&&(bcrypt.compare(password,user.password))){
+       const token = jwt.sign(
+        {user_id:user._id, email},
+        process.env.TOKEN_KEY,{
+          expiresIn:"2h",
+        }
+      )
+      console.log(token)
+      res.status(200).json(user);
+    }
+    else{
+      res.status(404).json({message:"Account Not Found!"})
+    }
+
+  }catch(err){
+    res.status(404).json(err)
+    console.log(err)
+  }
+})
 
 app.get("*", (req, res) => {
   res.sendFile(
