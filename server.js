@@ -150,7 +150,51 @@ app.post("/register", async (req, res) => {
   } catch (error) {
     console.error("Error:", error);
     res.status(500).json({ message: "Registration failed" });
-    res.status(500).json({ message: "Registration failed" });
+  }
+});
+
+//  Update Profile
+
+// Get Profile detail
+app.get("/api/profile-detail-data",async(req,res)=>{
+  try {
+    const username = req.query.username
+    const profileData = await Product.findOne({username : username});
+    res.json(profileData);
+  }catch(error){
+    console.error(error)
+    res.status(500).json({message : 'Server Error'})
+  }
+});
+
+// Edit Profile
+app.patch("/edit-profile", async (req, res) => {
+  try {
+    console.log("Received data:", req.body);
+    const { Username, FirstName, LastName, Email, Password, Address, Phone } =
+      req.body;
+
+    encryptedPassword = await bcrypt.hash(Password, 10);
+
+    console.log("save to::", imgPath);
+
+    // Save the user to the database
+    await User.updateOne({"username": body.username}, {
+      $set: {
+        "username": Username,
+        "firstName": FirstName,
+        "lastName": LastName,
+        "email": Email,
+        "password": encryptedPassword,
+        "address": Address,
+        "phone": Phone,
+      }
+    },{ upsert: true });
+
+    res.json({ message: "Edit Profile successful" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Edit Profile failed" });
   }
 });
 
@@ -184,8 +228,6 @@ app.post("/add-product", upload.single('ProductImage'), async (req, res) => {
     res.status(500).json({ message: "Add Product failed" });
   }
 });
-
-
 
 //  Update Product
 // Edit Product
@@ -231,6 +273,7 @@ app.get("/api/product-detail-data",async(req,res,next)=>{
   }
 });
 
+// Login
 app.post("/api/login",async(req,res)=>{
   try{
     const {email,password}=req.body;
@@ -267,6 +310,6 @@ app.get("*", (req, res) => {
 });
 
 // Start the server
-app.listen(3000, () => {
+app.listen(5000, () => {
   console.log("Server is running nicely");
 });
