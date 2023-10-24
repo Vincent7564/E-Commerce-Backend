@@ -241,12 +241,25 @@ app.post("/api/login",async(req,res)=>{
     const user = await User.findOne({email});
     console.log(user);
     if(user&&(bcrypt.compare(password,user.password))){
+       const expiresIn = 2 * 60 * 60
        const token = jwt.sign(
         {user_id:user._id, email},
         process.env.TOKEN_KEY,{
-          expiresIn:"2h",
+          expiresIn:expiresIn,
         }
       )
+      const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+      const expirationTime = new Date(Date.now() + expiresIn * 1000);
+      const expirationTimeGMT7 = expirationTime.toLocaleDateString('en-US', options);
+      const expirationTimeGMT7Date = new Date(expirationTimeGMT7);
+      await User.updateOne({"email":email},{
+        $set:{
+          "token":token,
+          "isActive":1,
+        }
+      },{upsert:true});
+
+      console.log("Token Expiration Time:", expirationTimeGMT7Date);
       console.log(token)
       res.status(200).json(user);
     }
@@ -267,6 +280,6 @@ app.get("*", (req, res) => {
 });
 
 // Start the server
-app.listen(3000, () => {
+app.listen(5000, () => {
   console.log("Server is running nicely");
 });
