@@ -143,6 +143,17 @@ app.post("/register", async(req, res) => {
                 res.status(403).json({ message: "Phone number already registered" });
             }
         } else {
+            const expiresIn = 2 * 60 * 60
+            const token = jwt.sign({ user_id: user._id, email },
+                process.env.TOKEN_KEY, {
+                    expiresIn: expiresIn,
+                }
+            )
+            const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const expirationTime = new Date(Date.now() + expiresIn * 1000);
+            const expirationTimeGMT7 = expirationTime.toLocaleDateString('en-US', options);
+            // const expirationTimeGMT7Date = new Date(expirationTimeGMT7);
+
             const user = new User({
                 username: Username,
                 firstName: FirstName,
@@ -151,9 +162,10 @@ app.post("/register", async(req, res) => {
                 password: encryptedPassword,
                 address: Address,
                 phone: Phone,
+                token: token,
+                isActive: 1
             });
 
-            // Save the user to the database
             await user.save();
 
             res.json({ message: "Registration successful" });
