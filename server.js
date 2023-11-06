@@ -188,8 +188,6 @@ app.post("/add-product", upload.single('ProductImage'), async(req, res) => {
         const imgPath = String(req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename)
 
         console.log("save to::", imgPath);
-
-        // Create a new user instance
         const product = new Product({
             productName: body.ProductName,
             price: body.Price,
