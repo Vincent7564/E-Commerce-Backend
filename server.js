@@ -144,7 +144,8 @@ app.post("/register", async(req, res) => {
             }
         } else {
             const expiresIn = 2 * 60 * 60
-            const token = jwt.sign({ user_id: user._id, email },
+            const tokenKey = ENV.TOKEN_KEY
+            const token = jwt.sign({ tokenKey, Email },
                 process.env.TOKEN_KEY, {
                     expiresIn: expiresIn,
                 }
@@ -152,8 +153,7 @@ app.post("/register", async(req, res) => {
             const options = { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', second: '2-digit' };
             const expirationTime = new Date(Date.now() + expiresIn * 1000);
             const expirationTimeGMT7 = expirationTime.toLocaleDateString('en-US', options);
-            // const expirationTimeGMT7Date = new Date(expirationTimeGMT7);
-
+            const expirationTimeGMT7Date = new Date(expirationTimeGMT7);
             const user = new User({
                 username: Username,
                 firstName: FirstName,
@@ -162,8 +162,6 @@ app.post("/register", async(req, res) => {
                 password: encryptedPassword,
                 address: Address,
                 phone: Phone,
-                token: token,
-                isActive: 1
             });
 
             await user.save();
@@ -186,8 +184,6 @@ app.post("/add-product", upload.single('ProductImage'), async(req, res) => {
         const imgPath = String(req.protocol + '://' + req.get('host') + '/uploads/' + req.file.filename)
 
         console.log("save to::", imgPath);
-
-        // Create a new user instance
         const product = new Product({
             productName: body.ProductName,
             price: body.Price,
@@ -263,8 +259,9 @@ app.post("/api/login", async(req, res) => {
         const user = await User.findOne({ email });
         console.log(user);
         if (user && (bcrypt.compare(password, user.password))) {
+            const tokenKey = ENV.TOKEN_KEY
             const expiresIn = 2 * 60 * 60
-            const token = jwt.sign({ user_id: user._id, email },
+            const token = jwt.sign({ tokenKey, email },
                 process.env.TOKEN_KEY, {
                     expiresIn: expiresIn,
                 }
