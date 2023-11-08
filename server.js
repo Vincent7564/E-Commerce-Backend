@@ -282,7 +282,7 @@ app.post("/api/login", async(req, res) => {
 
             console.log("Token Expiration Time:", expirationTimeGMT7Date);
             console.log(token)
-            res.status(200).json({token,user});
+            res.status(200).json(user);
         } else {
             res.status(404).json({ message: "Account Not Found!" })
         }
