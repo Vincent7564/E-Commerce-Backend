@@ -203,8 +203,6 @@ app.post("/add-product", upload.single('ProductImage'), async(req, res) => {
     }
 });
 
-
-
 //  Update Product
 // Edit Product
 app.patch("/edit-product", upload.single('ProductImage'), async(req, res) => {
