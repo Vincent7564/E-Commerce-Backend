@@ -166,12 +166,65 @@ app.post("/register", async(req, res) => {
 
             await user.save();
 
+<<<<<<< HEAD
             res.json({ message: "Registration successful" });
         }
     } catch (error) {
         console.error("Error:", error);
         res.status(500).json({ message: "Registration failed" });
     }
+=======
+    res.json({ message: "Registration successful" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Registration failed" });
+  }
+});
+
+//  Update Profile
+
+// Get Profile detail
+app.get("/api/profile-detail-data",async(req,res)=>{
+  try {
+    const username = req.query.username
+    const profileData = await Product.findOne({username : username});
+    res.json(profileData);
+  }catch(error){
+    console.error(error)
+    res.status(500).json({message : 'Server Error'})
+  }
+});
+
+// Edit Profile
+app.patch("/edit-profile", async (req, res) => {
+  try {
+    console.log("Received data:", req.body);
+    const { Username, FirstName, LastName, Email, Password, Address, Phone } =
+      req.body;
+
+    encryptedPassword = await bcrypt.hash(Password, 10);
+
+    console.log("save to::", imgPath);
+
+    // Save the user to the database
+    await User.updateOne({"username": body.username}, {
+      $set: {
+        "username": Username,
+        "firstName": FirstName,
+        "lastName": LastName,
+        "email": Email,
+        "password": encryptedPassword,
+        "address": Address,
+        "phone": Phone,
+      }
+    },{ upsert: true });
+
+    res.json({ message: "Edit Profile successful" });
+  } catch (error) {
+    console.error("Error:", error);
+    res.status(500).json({ message: "Edit Profile failed" });
+  }
+>>>>>>> e29a32ce9635eafbbdea9db707237101cf5bf80c
 });
 
 // Add Product
@@ -202,8 +255,6 @@ app.post("/add-product", upload.single('ProductImage'), async(req, res) => {
         res.status(500).json({ message: "Add Product failed" });
     }
 });
-
-
 
 //  Update Product
 // Edit Product
@@ -249,11 +300,29 @@ app.get("/api/product-detail-data", async(req, res, next) => {
     }
 });
 
+<<<<<<< HEAD
 app.post("/api/login", async(req, res) => {
     try {
         const { email, password } = req.body;
         if (!(email && password)) {
             res.status(400).send("All field must be filled");
+=======
+// Login
+app.post("/api/login",async(req,res)=>{
+  try{
+    const {email,password}=req.body;
+    if(!(email && password)){
+      res.status(400).send("All field must be filled");
+    }
+    console.log(email,password)
+    const user = await User.findOne({email});
+    console.log(user);
+    if(user&&(bcrypt.compare(password,user.password))){
+       const token = jwt.sign(
+        {user_id:user._id, email},
+        process.env.TOKEN_KEY,{
+          expiresIn:"2h",
+>>>>>>> e29a32ce9635eafbbdea9db707237101cf5bf80c
         }
         console.log(email, password)
         const user = await User.findOne({ email });
@@ -298,5 +367,9 @@ app.get("*", (req, res) => {
 
 // Start the server
 app.listen(5000, () => {
+<<<<<<< HEAD
     console.log("Server is running nicely");
+=======
+  console.log("Server is running nicely");
+>>>>>>> e29a32ce9635eafbbdea9db707237101cf5bf80c
 });
