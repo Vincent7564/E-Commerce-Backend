@@ -1,11 +1,23 @@
+// authMiddleware.js
+
 const jwt = require('jsonwebtoken');
 
-const secretKey = "astaganagadragonballmantapjiwa";
+const verifyToken = (req, res, next) => {
+  const token = req.headers.authorization;
+  if (!token) {
+    return res.status(401).json({ message: 'Unauthorized' });
+  }
 
-const userData ={
-    username : "",
-    password:"",
-    role:"",
-}
+  jwt.verify(token, "Pr0J3cTB3rSAm4B40b31", (err, decoded) => {
+    console.log(token)
+    if (err) {
+      console.log(err)
+      return res.status(401).json({ message: 'Token is not valid' });
+    }
 
-const token = jwt.sign(userData,secretKey,{expiresIn:'24h'});
+    req.user = decoded.user;
+    next();
+  });
+};
+
+module.exports = verifyToken;

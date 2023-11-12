@@ -14,6 +14,7 @@ const Carousel = require("./Models/Carousel");
 const Token = require("./Models/Token");
 const { mongo } = require("mongoose");
 const jwt = require("jsonwebtoken")
+const verifyToken = require("./Middleware/auth")
     // Connect to the database
 connectDB();
 
@@ -144,7 +145,7 @@ app.post("/register", async(req, res) => {
             }
         } else {
             const expiresIn = 2 * 60 * 60
-            const tokenKey = ENV.TOKEN_KEY
+            const tokenKey = "Pr0J3cTB3rSAm4B40b31"
             const token = jwt.sign({ tokenKey, Email },
                 process.env.TOKEN_KEY, {
                     expiresIn: expiresIn,
@@ -307,11 +308,8 @@ app.post("/api/login",async(req,res)=>{
         process.env.TOKEN_KEY,{
           expiresIn:"2h",
         })
-        console.log(email, password)
-        const user = await User.findOne({ email });
-        console.log(user);
         if (user && (bcrypt.compare(password, user.password))) {
-            const tokenKey = ENV.TOKEN_KEY
+            const tokenKey = "Pr0J3cTB3rSAm4B40b31"
             const expiresIn = 2 * 60 * 60
             const token = jwt.sign({ tokenKey, email },
                 process.env.TOKEN_KEY, {
@@ -341,6 +339,10 @@ app.post("/api/login",async(req,res)=>{
         console.log(err)
     }
 })
+
+app.get('/check-authorization', verifyToken, (req, res) => {
+    res.status(200).json({ message: 'Authorization check passed!', user: req.user });
+});
 
 app.get("*", (req, res) => {
     res.sendFile(
