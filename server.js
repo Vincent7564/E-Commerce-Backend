@@ -144,7 +144,7 @@ app.post("/register", async(req, res) => {
             }
         } else {
             const expiresIn = 2 * 60 * 60
-            const tokenKey = ENV.TOKEN_KEY
+            const tokenKey = "Pr0J3cTB3rSAm4B40b31"
             const token = jwt.sign({ tokenKey, Email },
                 process.env.TOKEN_KEY, {
                     expiresIn: expiresIn,
@@ -175,12 +175,11 @@ app.post("/register", async(req, res) => {
 });
 
 //  Update Profile
-
 // Get Profile detail
 app.get("/api/profile-detail-data",async(req,res)=>{
   try {
-    const username = req.query.username
-    const profileData = await Product.findOne({username : username});
+    const email = req.query.email
+    const profileData = await User.findOne({email : email});
     res.json(profileData);
   }catch(error){
     console.error(error)
@@ -307,11 +306,8 @@ app.post("/api/login",async(req,res)=>{
         process.env.TOKEN_KEY,{
           expiresIn:"2h",
         })
-        console.log(email, password)
-        const user = await User.findOne({ email });
-        console.log(user);
         if (user && (bcrypt.compare(password, user.password))) {
-            const tokenKey = ENV.TOKEN_KEY
+            const tokenKey = "Pr0J3cTB3rSAm4B40b31"
             const expiresIn = 2 * 60 * 60
             const token = jwt.sign({ tokenKey, email },
                 process.env.TOKEN_KEY, {
