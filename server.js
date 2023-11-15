@@ -163,6 +163,7 @@ app.post("/register", async(req, res) => {
                 password: encryptedPassword,
                 address: Address,
                 phone: Phone,
+                role: 102,
             });
 
             await user.save();

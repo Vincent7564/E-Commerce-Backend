@@ -10,7 +10,8 @@ const userSchema = new mongoose.Schema({
   phone: String,
   token : String,
   isActive : Boolean,
-  expirationTime:Date
+  expirationTime:Date,
+  role : Number,
 });
 
 const User = mongoose.model('User', userSchema);
