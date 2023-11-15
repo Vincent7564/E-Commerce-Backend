@@ -215,6 +215,38 @@ app.patch("/edit-profile", async (req, res) => {
   }
 });
 
+app.patch("/change-password", async (req, res) => {
+    console.log("Received data:");
+
+    try {
+      console.log("Received data:");
+      console.log(req.body)
+      const { newPassword, oldPassword, cPassword, email } =
+        req.body;
+  
+      encryptedPassword = await bcrypt.hash(newPassword, 10);
+
+      const user = await User.findOne({email});
+      // validate password
+      if(user && bcrypt.compare(oldPassword,user.password)){
+        // Save the user to the database
+        await User.updateOne({"email": req.body.email}, {
+            $set: {
+            "password": encryptedPassword,
+            }
+        },{ upsert: true });
+        console.log("update")
+        res.json({ message: "Edit Profile successful" });
+      } else {
+        res.status(500).json({ message: "Edit Profile failed" });
+      }
+      
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ message: "Edit Profile failed" });
+    }
+  });
+
 // Add Product
 app.post("/add-product", upload.single('ProductImage'), async(req, res) => {
     try {
