@@ -190,22 +190,19 @@ app.get("/api/profile-detail-data",async(req,res)=>{
 // Edit Profile
 app.patch("/edit-profile", async (req, res) => {
   try {
-    console.log("Received data:", req.body);
-    const { Username, FirstName, LastName, Email, Password, Address, Phone } =
+    console.log("Received data:");
+    console.log(req.body)
+    const { Username, FirstName, LastName, Email, Address, Phone } =
       req.body;
 
-    encryptedPassword = await bcrypt.hash(Password, 10);
-
-    console.log("save to::", imgPath);
 
     // Save the user to the database
-    await User.updateOne({"username": body.username}, {
+    await User.updateOne({"username": req.body.Username}, {
       $set: {
         "username": Username,
         "firstName": FirstName,
         "lastName": LastName,
         "email": Email,
-        "password": encryptedPassword,
         "address": Address,
         "phone": Phone,
       }
