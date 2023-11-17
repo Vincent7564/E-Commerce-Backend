@@ -144,7 +144,7 @@ app.post("/register", async(req, res) => {
             }
         } else {
             const expiresIn = 2 * 60 * 60
-            const tokenKey = ENV.TOKEN_KEY
+            const tokenKey = "Pr0J3cTB3rSAm4B40b31"
             const token = jwt.sign({ tokenKey, Email },
                 process.env.TOKEN_KEY, {
                     expiresIn: expiresIn,
@@ -175,12 +175,11 @@ app.post("/register", async(req, res) => {
 });
 
 //  Update Profile
-
 // Get Profile detail
 app.get("/api/profile-detail-data",async(req,res)=>{
   try {
-    const username = req.query.username
-    const profileData = await Product.findOne({username : username});
+    const email = req.query.email
+    const profileData = await User.findOne({email : email});
     res.json(profileData);
   }catch(error){
     console.error(error)
@@ -191,22 +190,19 @@ app.get("/api/profile-detail-data",async(req,res)=>{
 // Edit Profile
 app.patch("/edit-profile", async (req, res) => {
   try {
-    console.log("Received data:", req.body);
-    const { Username, FirstName, LastName, Email, Password, Address, Phone } =
+    console.log("Received data:");
+    console.log(req.body)
+    const { Username, FirstName, LastName, Email, Address, Phone } =
       req.body;
 
-    encryptedPassword = await bcrypt.hash(Password, 10);
-
-    console.log("save to::", imgPath);
 
     // Save the user to the database
-    await User.updateOne({"username": body.username}, {
+    await User.updateOne({"username": req.body.Username}, {
       $set: {
         "username": Username,
         "firstName": FirstName,
         "lastName": LastName,
         "email": Email,
-        "password": encryptedPassword,
         "address": Address,
         "phone": Phone,
       }
@@ -218,6 +214,38 @@ app.patch("/edit-profile", async (req, res) => {
     res.status(500).json({ message: "Edit Profile failed" });
   }
 });
+
+app.patch("/change-password", async (req, res) => {
+    console.log("Received data:");
+
+    try {
+      console.log("Received data:");
+      console.log(req.body)
+      const { newPassword, oldPassword, cPassword, email } =
+        req.body;
+  
+      encryptedPassword = await bcrypt.hash(newPassword, 10);
+
+      const user = await User.findOne({email});
+      // validate password
+      if(user && bcrypt.compare(oldPassword,user.password)){
+        // Save the user to the database
+        await User.updateOne({"email": req.body.email}, {
+            $set: {
+            "password": encryptedPassword,
+            }
+        },{ upsert: true });
+        console.log("update")
+        res.json({ message: "Edit Profile successful" });
+      } else {
+        res.status(500).json({ message: "Edit Profile failed" });
+      }
+      
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ message: "Edit Profile failed" });
+    }
+  });
 
 // Add Product
 app.post("/add-product", upload.single('ProductImage'), async(req, res) => {
@@ -307,11 +335,8 @@ app.post("/api/login",async(req,res)=>{
         process.env.TOKEN_KEY,{
           expiresIn:"2h",
         })
-        console.log(email, password)
-        const user = await User.findOne({ email });
-        console.log(user);
         if (user && (bcrypt.compare(password, user.password))) {
-            const tokenKey = ENV.TOKEN_KEY
+            const tokenKey = "Pr0J3cTB3rSAm4B40b31"
             const expiresIn = 2 * 60 * 60
             const token = jwt.sign({ tokenKey, email },
                 process.env.TOKEN_KEY, {
