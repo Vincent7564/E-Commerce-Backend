@@ -14,6 +14,7 @@ const Carousel = require("./Models/Carousel");
 const Token = require("./Models/Token");
 const { mongo } = require("mongoose");
 const jwt = require("jsonwebtoken")
+const verifyToken = require("./Middleware/auth")
     // Connect to the database
 connectDB();
 
@@ -162,6 +163,7 @@ app.post("/register", async(req, res) => {
                 password: encryptedPassword,
                 address: Address,
                 phone: Phone,
+                role: 102,
             });
 
             await user.save();
@@ -366,6 +368,10 @@ app.post("/api/login",async(req,res)=>{
         console.log(err)
     }
 })
+
+app.get('/check-authorization', verifyToken, (req, res) => {
+    res.status(200).json({ message: 'Authorization check passed!', user: req.user });
+});
 
 app.get("*", (req, res) => {
     res.sendFile(
