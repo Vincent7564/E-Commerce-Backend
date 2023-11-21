@@ -45,7 +45,7 @@ app.get("/api/product-card-data", async(req, res, next) => {
 
 app.delete("/api/delete-product/:id", async(req, res) => {
     const productID = req.params.id;
-
+    console.log('Masuk Ngab '+ productID)
     try {
         const deletedProduct = await Product.findByIdAndRemove(productID);
         if (!deletedProduct) {
