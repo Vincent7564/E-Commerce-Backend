@@ -8,7 +8,7 @@ const productSchema = new mongoose.Schema({
     description: String,
     qty: Decimal128,
     productImage: String,
-    discount : Decimal128,
+    discount : Number
 });
 
 const Product = mongoose.model('Product', productSchema);
