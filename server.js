@@ -217,6 +217,19 @@ app.patch("/edit-profile", async (req, res) => {
   }
 });
 
+app.post("/logout",async(req,res)=>{
+    try{
+        req.session.destroy((err)=>{
+            if(err){
+                return res.status(500).json({Error:'Logout Failed'})
+            }
+            res.json({message:'Logout Successfully'})
+        })
+    }catch(error){
+        return res.json({error:error});
+    }
+})
+
 app.patch("/change-password", async (req, res) => {
     console.log("Received data:");
 
