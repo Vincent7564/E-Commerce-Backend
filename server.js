@@ -14,7 +14,8 @@ const Carousel = require("./Models/Carousel");
 const Token = require("./Models/Token");
 const { mongo } = require("mongoose");
 const jwt = require("jsonwebtoken")
-const verifyToken = require("./Middleware/auth")
+const verifyToken = require("./Middleware/auth");
+const Cart = require("./Models/Cart");
     // Connect to the database
 connectDB();
 
@@ -381,6 +382,39 @@ app.post("/api/login",async(req,res)=>{
         console.log(err)
     }
 })
+
+// add to cart
+app.post("/add-to-cart", async(req, res) => {
+    try {
+        console.log("Received data:", req.body);
+        console.log("Received filename:", req.file.filename);
+
+        const body = req.body;
+
+        const user_id = body.user_id;
+        if(!(user_id)){
+            res.status(400).send("Login First");
+        }
+        const user = await User.findOne({user_id});
+        console.log(user);
+        if(!(user)){
+            res.status(400).send("Login First");
+        }
+        
+        await Cart.findOneAndUpdate ({
+            ''
+        })
+
+        // Save the user to the database
+        await cart.save();
+
+        res.json({ message: "Add to Cart successful" });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ message: "Add to Cart failed" });
+    }
+});
+
 
 app.get('/check-authorization', verifyToken, (req, res) => {
     res.status(200).json({ message: 'Authorization check passed!', user: req.user });
